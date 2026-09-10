@@ -10,15 +10,27 @@ public class MyPanel extends JPanel implements KeyListener {
     //定义坦克
     Hero hero=null;
     Vector<EnemyTank> enemyTanks=new Vector<>();
-    Vector<Zidan> heroZidans=new Vector<>();
+
     int enemyTankSize=3;
     public MyPanel() {
-        hero = new Hero(100,100,0);
+        hero = new Hero(100,100,0,new ZidanCallback() {
+            @Override
+            public void en(){
+                repaint();
+            }
+        });
         hero.setSpeed(5);
 
         for (int i = 0; i < enemyTankSize; i++) {
-            EnemyTank enemyTank =new EnemyTank(200+(i*100),0,2);
+            EnemyTank enemyTank =new EnemyTank(200+(i*100),0,2,new ZidanCallback() {
+                @Override
+                public void en(){
+                    repaint();
+                }
+            });
             enemyTanks.add(enemyTank);
+            Thread thread = new Thread(enemyTank);
+            thread.start();
         }
 
     }
@@ -28,14 +40,29 @@ public class MyPanel extends JPanel implements KeyListener {
 
         g.fillRect(0,0,1000,750);
         drawTank(hero.getX(),hero.getY(),g,hero.getDirect(),0);
+        synchronized(this){
+            for (EnemyTank o :enemyTanks) {
+                drawTank(o.getX(),o.getY(),g,o.getDirect(),1);
+                for (Zidan c :o.enemyZidans) {
+                    if(!c.isX){
+                        drawZidan(c.getX(),c.getY(),g,c.getDirect(),0);
+                    }
 
-        for (EnemyTank o :enemyTanks) {
-            drawTank(o.getX(),o.getY(),g,o.getDirect(),1);
+                }
+
+            }
+
+        }
+        synchronized(this){
+            for (Zidan o :hero.heroZidans) {
+                if(!o.isX){
+                    drawZidan(o.getX(),o.getY(),g,o.getDirect(),0);
+                }
+
+            }
         }
 
-        for (Zidan o :heroZidans) {
-            drawZidan(o.getX(),o.getY(),g,o.getDirect(),0);
-        }
+
     }
     public void drawTank(int x,int y,Graphics g,int direct,int type){
         switch (type){
@@ -95,16 +122,16 @@ public class MyPanel extends JPanel implements KeyListener {
         }
         switch (direct){
             case 0://向上
-                g.fillOval(x+20,y,20,20);
+                g.fillOval(x+17,y,6,6);
                 break;
             case 1://向右
-                g.fillOval(x+60,y+20,20,20);
+                g.fillOval(x+60,y+17,5,5);
                 break;
             case 2://向下
-                g.fillOval(x+20,y+60,20,20);
+                g.fillOval(x+17,y+60,5,5);
                 break;
             case 3://向右
-                g.fillOval(x,y+20,20,20);
+                g.fillOval(x,y+17,5,5);
                 break;
             default:
                 break;
@@ -123,7 +150,7 @@ public class MyPanel extends JPanel implements KeyListener {
         int x=hero.getX();
         switch (e.getKeyCode()){
             case KeyEvent.VK_DOWN:
-                hero.setDirect(0);
+                hero.setDirect(2);
                 hero.moveDown();
 
 //                if(y>=750){
@@ -145,24 +172,14 @@ public class MyPanel extends JPanel implements KeyListener {
                 }
                 break;
             case KeyEvent.VK_UP:
-                hero.setDirect(2);
+                hero.setDirect(0);
                 hero.moveUp();
                 if(y<=0){
                     hero.setY(0);
                 }
                 break;
             case KeyEvent.VK_J:
-                Zidan a= new Zidan(hero.getX()+100,hero.getY(),hero.getDirect(),new ZidanCallback() {
-                    @Override
-                    public void en(){
-                        repaint();
-                    }
-                });
-                a.setSpeed(10);
-                heroZidans.add(a);
-                System.out.println(heroZidans);
-                Thread thread = new Thread(a);
-                thread.start();
+                hero.faShe();
                 break;
             default:
                 break;

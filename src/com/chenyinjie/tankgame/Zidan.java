@@ -7,7 +7,8 @@ public class Zidan implements Runnable {
         private int y;
         private int direct;
         private int speed=1;
-    private ZidanCallback callback;
+        public boolean isX=false;
+        private ZidanCallback callback;
         public int getSpeed() {
             return speed;
         }
@@ -63,22 +64,35 @@ public class Zidan implements Runnable {
     @Override
     public void run() {
         while (true){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             switch (direct){
                 case 0:
-                    moveDown();
+                    moveUp();
                     break;
                 case 1:
                     moveRight();
                     break;
                 case 2:
-                    moveUp();
+                    moveDown();
+
                     break;
                 case 3:
                     moveLeft();
                 default:
                     break;
             }
+            if(x>=1000||x<0||y>=750||y<0){
+                isX=true;
+                callback.en();
+
+                break;
+            }
             callback.en();
+
         }
     }
 }
