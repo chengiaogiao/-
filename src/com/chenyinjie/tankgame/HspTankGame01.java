@@ -11,6 +11,7 @@ public class HspTankGame01 extends JFrame {
     public HspTankGame01(){
     mp=new MyPanel();
     this.add(mp);
+    new Thread(mp).start();
     this.setSize(1000,750);
     this.addKeyListener(mp);
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -1,14 +1,11 @@
 package com.chenyinjie.tankgame;
-interface ZidanCallback {
-    void en();
-}
+
 public class Zidan implements Runnable {
         private int x;
         private int y;
         private int direct;
         private int speed=1;
         public boolean isX=false;
-        private ZidanCallback callback;
         public int getSpeed() {
             return speed;
         }
@@ -38,11 +35,10 @@ public class Zidan implements Runnable {
             this.direct = direct;
         }
 
-        public Zidan(int x, int y,int direct, ZidanCallback callback) {
+        public Zidan(int x, int y,int direct) {
             this.x = x;
             this.y = y;
             this.direct = direct;
-            this.callback = callback;
         }
 
         public int getX() {
@@ -63,7 +59,7 @@ public class Zidan implements Runnable {
 
     @Override
     public void run() {
-        while (true){
+        while (!isX){
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -87,11 +83,9 @@ public class Zidan implements Runnable {
             }
             if(x>=1000||x<0||y>=750||y<0){
                 isX=true;
-                callback.en();
 
                 break;
             }
-            callback.en();
 
         }
     }

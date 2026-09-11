@@ -1,46 +1,69 @@
 package com.chenyinjie.tankgame;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 import java.util.Vector;
 
-public class MyPanel extends JPanel implements KeyListener {
+public class MyPanel extends JPanel implements KeyListener,Runnable {
     //定义坦克
     Hero hero=null;
     Vector<EnemyTank> enemyTanks=new Vector<>();
+    Vector<Bome> bomes=new Vector<>();
+
+    Object obj1=new Object();
+    Object obj2=new Object();
+
+    Image a=null;
+    Image a1=null;
+    Image a2=null;
+    Image a3=null;
+    Image a4=null;
+
+    String aa2= new String();
 
     int enemyTankSize=3;
     public MyPanel() {
-        hero = new Hero(100,100,0,new ZidanCallback() {
-            @Override
-            public void en(){
-                repaint();
-            }
-        });
+        hero = new Hero(100,100,0);
         hero.setSpeed(5);
 
         for (int i = 0; i < enemyTankSize; i++) {
-            EnemyTank enemyTank =new EnemyTank(200+(i*100),0,2,new ZidanCallback() {
-                @Override
-                public void en(){
-                    repaint();
-                }
-            });
+            EnemyTank enemyTank =new EnemyTank(200+(i*100),0,2);
             enemyTanks.add(enemyTank);
             Thread thread = new Thread(enemyTank);
             thread.start();
         }
-
+        try {
+            a = ImageIO.read(getClass().getResource("/explosion1.png"));
+            a1 = ImageIO.read(getClass().getResource("/explosion2.png"));
+            a2 = ImageIO.read(getClass().getResource("/explosion3.png"));
+            a3 = ImageIO.read(getClass().getResource("/explosion4.png"));
+            a4 = ImageIO.read(getClass().getResource("/explosion5.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
     @Override
     public void paint(Graphics g) {
         super.paint(g);
+        System.out.println("paint at " + System.currentTimeMillis());
 
         g.fillRect(0,0,1000,750);
-        drawTank(hero.getX(),hero.getY(),g,hero.getDirect(),0);
-        synchronized(this){
+        if(hero!=null){
+            drawTank(hero.getX(),hero.getY(),g,hero.getDirect(),0);
+
+            if(hero.isX){
+                hero=null;
+            }
+
+        }
+
+
+//        synchronized(obj1){
             for (EnemyTank o :enemyTanks) {
                 drawTank(o.getX(),o.getY(),g,o.getDirect(),1);
                 for (Zidan c :o.enemyZidans) {
@@ -49,21 +72,81 @@ public class MyPanel extends JPanel implements KeyListener {
                     }
 
                 }
-
+                o.enemyZidans.removeIf(aa->aa.isX);
             }
 
-        }
-        synchronized(this){
+
+            enemyTanks.removeIf(aa->aa.isX);
+
+//        }
+
+
+//        synchronized(obj1){
+        if(hero!=null){
             for (Zidan o :hero.heroZidans) {
+
                 if(!o.isX){
                     drawZidan(o.getX(),o.getY(),g,o.getDirect(),0);
                 }
-
             }
+            hero.heroZidans.removeIf(o->o.isX);
         }
 
+//        }
+//        synchronized(obj1){
+              System.out.println(bomes);
+            for (int i = 0; i < bomes.size(); i++) {
+                Bome o = bomes.get(i);
+                if (o.live > 12) {
+                    g.drawImage(a, o.getX(), o.getY(), 60, 60, this);
+                } else if (o.live > 9) {
+                    g.drawImage(a1, o.getX(), o.getY(), 60, 60, this);
+
+                } else if (o.live > 6) {
+                    g.drawImage(a2, o.getX(), o.getY(), 60, 60, this);
+
+                } else if (o.live > 3) {
+                    g.drawImage(a3, o.getX(), o.getY(), 60, 60, this);
+                } else {
+                    g.drawImage(a4, o.getX(), o.getY(), 60, 60, this);
+
+                }
+                o.mulLive();
+
+            }
+            bomes.removeIf(aa->aa.isX);
+
+//        }
 
     }
+
+    public void pengZhuang(Zidan zidan,Tank enemyTank){
+
+        if (zidan.isX || enemyTank.isX) return;
+        switch (enemyTank.getDirect()){
+            case 0:
+            case 2:
+                if((zidan.getX()+17)>=enemyTank.getX()&&(zidan.getX()+17)<=enemyTank.getX()+40&&zidan.getY()>=enemyTank.getY()&&zidan.getY()<=enemyTank.getY()+60){
+                    Bome b= new Bome(enemyTank.getX(),enemyTank.getY());
+                    bomes.add(b);
+                    zidan.isX=true;
+                    enemyTank.isX=true;
+
+                }
+                break;
+            case 1:
+            case 3:
+                if(zidan.getX()>=enemyTank.getX()&&zidan.getX()<=enemyTank.getX()+60&&(zidan.getY()+17)>=enemyTank.getY()&&(zidan.getY()+17)<=enemyTank.getY()+40){
+                    Bome b= new Bome(enemyTank.getX(),enemyTank.getY());
+                    bomes.add(b);
+                    zidan.isX=true;
+                    enemyTank.isX=true;
+
+                }
+                break;
+        }
+    }
+
     public void drawTank(int x,int y,Graphics g,int direct,int type){
         switch (type){
             case 0://我们的坦克
@@ -153,16 +236,16 @@ public class MyPanel extends JPanel implements KeyListener {
                 hero.setDirect(2);
                 hero.moveDown();
 
-//                if(y>=750){
-//                    hero.setY(750);
-//                }
+                if(y>=750){
+                    hero.setY(750);
+                }
                 break;
             case KeyEvent.VK_LEFT:
                 hero.setDirect(3);
                 hero.moveLeft();
-//                if(x<=0){
-//                    hero.setX(0);;
-//                }
+                if(x<=0){
+                    hero.setX(0);;
+                }
                 break;
             case KeyEvent.VK_RIGHT:
                 hero.setDirect(1);
@@ -185,11 +268,40 @@ public class MyPanel extends JPanel implements KeyListener {
                 break;
 
         }
-        this.repaint();
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
 
+    }
+
+    @Override
+    public void run() {
+        while (true){
+            try {
+                Thread.sleep(50);   // 20 FPS
+
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+                this.repaint();
+            if(hero!=null){
+                for (Zidan o :hero.heroZidans) {
+                    for (EnemyTank aa :enemyTanks) {
+                        aa.faShe();
+                        pengZhuang(o,aa);
+                    }
+
+                }
+                for (EnemyTank o :enemyTanks) {
+                    for (Zidan aa :o.enemyZidans) {
+                        pengZhuang(aa,hero);
+                    }
+
+                }
+            }
+
+
+        }
     }
 }

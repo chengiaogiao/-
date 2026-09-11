@@ -7,6 +7,7 @@ public class Tank {
     private int y;
     private int direct;
     private int speed=1;
+    public boolean isX=false;
 
     public int getSpeed() {
         return speed;
