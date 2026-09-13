@@ -33,6 +33,8 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
         for (int i = 0; i < enemyTankSize; i++) {
             EnemyTank enemyTank =new EnemyTank(200+(i*100),0,2);
             enemyTanks.add(enemyTank);
+            enemyTank.setEnemyTanks(enemyTanks);
+
             Thread thread = new Thread(enemyTank);
             thread.start();
         }
@@ -50,7 +52,6 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        System.out.println("paint at " + System.currentTimeMillis());
 
         g.fillRect(0,0,1000,750);
         if(hero!=null){
@@ -94,7 +95,6 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
 
 //        }
 //        synchronized(obj1){
-              System.out.println(bomes);
             for (int i = 0; i < bomes.size(); i++) {
                 Bome o = bomes.get(i);
                 if (o.live > 12) {
