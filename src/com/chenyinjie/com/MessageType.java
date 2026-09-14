@@ -7,4 +7,6 @@ public interface MessageType {
     String MESSAGE_GET_ONLIN="4";
     String MESSAGE_RET_ONLIN="5";
     String MESSAGE_C_END="6";
+    String MESSAGE_ALL_MES="7";
+    String MESSAGE_FILE_MES="8";
 }

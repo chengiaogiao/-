@@ -32,8 +32,12 @@ public class UserClientService {
         Xiancheng x=Mxiancheng.getXiancheng(user.getUserId());
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(x.getSocket().getOutputStream());
         objectOutputStream.writeObject(message);
-        objectOutputStream.close();
-        socket.close();
+//        objectOutputStream.close();
+//        socket.close();
+        x.setLoop(false);
+//        socket.close();
+        System.exit(0);
+
     }
 
 

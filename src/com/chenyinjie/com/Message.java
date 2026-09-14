@@ -9,6 +9,42 @@ public class Message implements Serializable {
     private String getter;
     private  String sendTime;
     private  String mesType;
+    private  byte[] bts;
+    private  int len;
+    private  String dest;
+    private  String src;
+
+    public byte[] getBts() {
+        return bts;
+    }
+
+    public void setBts(byte[] bts) {
+        this.bts = bts;
+    }
+
+    public int getLen() {
+        return len;
+    }
+
+    public void setLen(int len) {
+        this.len = len;
+    }
+
+    public String getDest() {
+        return dest;
+    }
+
+    public void setDest(String dest) {
+        this.dest = dest;
+    }
+
+    public String getSrc() {
+        return src;
+    }
+
+    public void setSrc(String src) {
+        this.src = src;
+    }
 
     public String getMesType() {
         return mesType;

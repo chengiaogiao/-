@@ -40,18 +40,31 @@ switch (key3){
         System.out.println("显示在线用户列表");
         break;
     case "2":
-        System.out.println("群发消息");
+        System.out.print("发消息内容：");
+        String key6= Utility.readString(100);
+        MessgaeClientService.setAME(key6,key1);
         break;
     case "3":
-        System.out.println("私聊消息");
+        System.out.print("发消息给：");
+        String key4= Utility.readString(50);
+        System.out.print("发消息内容：");
+        String key5= Utility.readString(100);
+        MessgaeClientService.setME(key4,key5,key1);
         break;
     case "4":
+
+        System.out.print("发文件给：");
+        String key7= Utility.readString(50);
+        System.out.print("发文件的地址：");
+        String key8= Utility.readString(100);
+        System.out.print("客户文件的地址：");
+        String key9= Utility.readString(100);
+        FileMess.setFME(key8,key9,key7,key1);
         System.out.println("发送文件");
         break;
     case "9":
         System.out.println("退出系统");
         userClientService.tui();
-        System.exit(0);
         loop=false;
 
         break;

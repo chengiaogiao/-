@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class Cline {
+
     public static void main(String[] args) throws IOException {
         Socket socket = new Socket(InetAddress.getLocalHost(),8888);
         String srcL="D:\\explosion1.png";

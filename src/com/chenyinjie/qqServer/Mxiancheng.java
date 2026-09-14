@@ -8,6 +8,10 @@ import java.util.Iterator;
 public class Mxiancheng {
     private static HashMap<String, Xiancheng> xians= new HashMap<>();
 
+    public static HashMap<String, Xiancheng> getXians() {
+        return xians;
+    }
+
     public static void addxiancheng(String userId, Xiancheng x){
         xians.put(userId,x);
     }

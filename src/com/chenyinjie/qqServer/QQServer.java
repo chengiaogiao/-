@@ -10,22 +10,32 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class QQServer {
 
     private ServerSocket ss=null;
   private   static   HashMap<String,User> list=new HashMap<>();
+    public static ConcurrentHashMap<String, Message> l=new ConcurrentHashMap<>();
 
     public static HashMap<String, User> getList() {
         return list;
     }
-
+    public static void  putL(String a,Message b){
+l.put(a,b);
+    }
     static {
         list.put("100",new User("100","123456"));
         list.put("101",new User("101","123456"));
         list.put("102",new User("102","123456"));
     }
 
+    /**
+     *
+     * @param userId
+     * @param password
+     * @return
+     */
     public static boolean chek(String userId,String password){
         if(list.get(userId)==null){
             return  false;
@@ -33,6 +43,8 @@ public class QQServer {
         if(!list.get(userId).getPassword().equals(password)){
             return  false;
         }
+
+
         return true;
     }
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -53,6 +65,12 @@ public class QQServer {
                Xiancheng xiancheng = new Xiancheng(accept,u.getUserId());
                xiancheng.start();
                Mxiancheng.addxiancheng(u.getUserId(),xiancheng);
+               if(l.get(u.getUserId())!=null){
+                   ObjectOutputStream objectOutputStream1 = new ObjectOutputStream( xiancheng.getSocket().getOutputStream());
+
+                   objectOutputStream1.writeObject(l.get(u.getUserId()));
+                   l.remove(u.getUserId());
+               }
            }else{
                m.setMesType(MessageType.MESSAGE_LOGIN_FAIL);
                objectOutputStream.writeObject(m);

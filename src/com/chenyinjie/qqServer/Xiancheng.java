@@ -6,6 +6,9 @@ import com.chenyinjie.com.MessageType;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Xiancheng extends  Thread{
    private Socket socket=null;
@@ -46,7 +49,36 @@ public class Xiancheng extends  Thread{
                      Mxiancheng.reXiancheng(id);
                      loop=false;
                  }
+                 if(aa.getMesType().equals(MessageType.MESSAGE_COMM_MES)){
+                     if(Mxiancheng.getXiancheng(aa.getGetter())==null){
+                         QQServer.putL(aa.getGetter(),aa);
+                     }else{
+                         ObjectOutputStream objectOutputStream = new ObjectOutputStream(Mxiancheng.getXiancheng(aa.getGetter()).getSocket().getOutputStream());
+                         objectOutputStream.writeObject(aa);
+                     }
 
+                 }
+                 if(aa.getMesType().equals(MessageType.MESSAGE_FILE_MES)){
+                     if(Mxiancheng.getXiancheng(aa.getGetter())==null){
+                         QQServer.putL(aa.getGetter(),aa);
+                     }else {
+                         ObjectOutputStream objectOutputStream = new ObjectOutputStream(Mxiancheng.getXiancheng(aa.getGetter()).getSocket().getOutputStream());
+                         objectOutputStream.writeObject(aa);
+                     }
+                 }
+                 if(aa.getMesType().equals(MessageType.MESSAGE_ALL_MES)){
+                     HashMap<String, Xiancheng> xians= Mxiancheng.getXians();
+                     Iterator<String> iterator = xians.keySet().iterator();
+                     while (iterator.hasNext()) {
+                         String next =  iterator.next();
+                         System.out.println(next+"---"+aa.getSender());
+                         if(!next.equals(aa.getSender())){
+                             ObjectOutputStream objectOutputStream = new ObjectOutputStream(xians.get(next).getSocket().getOutputStream());
+                             objectOutputStream.writeObject(aa);
+                         }
+                     }
+
+                 }
                  System.out.println(aa);
              } catch (Exception e) {
                  e.printStackTrace();
